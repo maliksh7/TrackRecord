@@ -1,0 +1,15 @@
+# Secrets
+.env
+
+# Build output
+target/
+*.class
+
+# IDE / OS
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Local data dumps (raw captures, backfill files): keep out of git
+data/

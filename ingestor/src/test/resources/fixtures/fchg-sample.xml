@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SYNTHETIC fixture shaped like an IRIS /fchg response. Note: no <tl>, changed attributes only. -->
+<timetable station="Dresden Hbf" eva="8010085">
+  <s id="-1234567890123456789-2410081512-5" eva="8010085">
+    <m id="r1" t="h" c="0" ts="2410081420" pr="2" cat="Information"/>
+    <ar ct="2410081542" cp="4">
+      <m id="d1" t="d" c="43" ts="2410081525"/>
+    </ar>
+    <dp ct="2410081546" cp="4"/>
+  </s>
+  <s id="987654321098765432-2410081540-1" eva="8010085">
+    <dp cs="c" clt="2410081500"/>
+  </s>
+</timetable>

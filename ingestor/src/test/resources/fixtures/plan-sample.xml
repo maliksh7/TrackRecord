@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SYNTHETIC fixture shaped like an IRIS /plan response. Replace with a real (anonymised) capture in week 1. -->
+<timetable station="Dresden Hbf">
+  <s id="-1234567890123456789-2410081512-5">
+    <tl f="N" t="p" o="800734" c="RE" n="16104"/>
+    <ar pt="2410081530" pp="3" l="50" ppth="Leipzig Hbf|Riesa|Coswig(b Dresden)|Dresden-Neustadt"/>
+    <dp pt="2410081535" pp="3" l="50" ppth="Freital-Potschappel|Tharandt|Freiberg(Sachs)"/>
+  </s>
+  <s id="987654321098765432-2410081540-1">
+    <tl f="F" t="p" o="80" c="ICE" n="1650"/>
+    <dp pt="2410081548" pp="11" ppth="Dresden-Neustadt|Riesa|Leipzig Hbf|Erfurt Hbf|Frankfurt(Main)Hbf"/>
+  </s>
+</timetable>

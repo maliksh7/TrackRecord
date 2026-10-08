@@ -1,0 +1,61 @@
+{
+  "uid": "trackrecord-overview",
+  "title": "TrackRecord - Overview",
+  "tags": ["trackrecord"],
+  "timezone": "Europe/Berlin",
+  "schemaVersion": 39,
+  "editable": true,
+  "refresh": "5m",
+  "time": { "from": "now-7d", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "table",
+      "title": "Punctuality by station (on time = < 6 min late)",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 9 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "trackrecord-pg" },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select station_name as \"Station\",\n       sum(planned_stops) as \"Planned stops\",\n       round(100.0 * sum(punctual_stops) / nullif(sum(stops_with_actuals), 0), 1) as \"Punctuality %\",\n       round(100.0 * sum(cancelled_stops) / nullif(sum(planned_stops), 0), 1) as \"Cancelled %\",\n       sum(delay_minutes_total) as \"Delay minutes\",\n       round(100.0 * sum(stops_with_actuals) / nullif(sum(planned_stops) - sum(cancelled_stops), 0), 1) as \"Coverage %\"\nfrom punctuality_station_hour\nwhere $__timeFilter(hour_start)\ngroup by station_name\norder by 3 asc"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Average delay per hour (minutes)",
+      "gridPos": { "x": 0, "y": 9, "w": 24, "h": 9 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "trackrecord-pg" },
+      "fieldConfig": { "defaults": { "unit": "m" }, "overrides": [] },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select hour_start as time, station_name as metric, avg_delay_min as value\nfrom punctuality_station_hour\nwhere $__timeFilter(hour_start)\norder by 1"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "table",
+      "title": "Data quality: ingest health (last hour)",
+      "gridPos": { "x": 0, "y": 18, "w": 24, "h": 8 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "trackrecord-pg" },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select h.endpoint, coalesce(s.name, h.eva) as station, h.last_fetch, h.calls_last_hour, h.http_errors_last_hour, h.parse_failures_last_hour\nfrom ingest_health h left join station s using (eva)\norder by h.endpoint, station"
+        }
+      ]
+    }
+  ]
+}

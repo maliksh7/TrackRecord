@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: trackrecord-ingestor
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:trackrecord}
+    username: ${POSTGRES_USER:trackrecord}
+    password: ${POSTGRES_PASSWORD:trackrecord}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+trackrecord:
+  db-api:
+    client-id: ${DB_CLIENT_ID:}
+    api-key: ${DB_API_KEY:}
+    requests-per-minute: ${DB_REQUESTS_PER_MINUTE:50}
+  ingest:
+    enabled: ${INGEST_ENABLED:true}
+    plan-lookahead-hours: 2
+    change-poll-interval: PT2M
+  # Start small, then grow within the request budget (docs/01-discovery-memo.md).
+  # EVA numbers: confirm each with GET /station/{name} in week 1 and note any corrections.
+  stations:
+    - { eva: "8010085", name: "Dresden Hbf" }
+    - { eva: "8010089", name: "Dresden-Neustadt" }
+    - { eva: "8010205", name: "Leipzig Hbf" }
+    - { eva: "8011160", name: "Berlin Hbf" }
+    - { eva: "8000261", name: "München Hbf" }
+    - { eva: "8000105", name: "Frankfurt (Main) Hbf" }
+    - { eva: "8002549", name: "Hamburg Hbf" }
+    - { eva: "8000207", name: "Köln Hbf" }

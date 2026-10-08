@@ -1,0 +1,57 @@
+name: trackrecord
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-trackrecord}
+      POSTGRES_USER: ${POSTGRES_USER:-trackrecord}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trackrecord}
+      READONLY_PASSWORD: ${READONLY_PASSWORD:-readonly}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  grafana:
+    image: grafana/grafana:13.2.3
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      POSTGRES_DB: ${POSTGRES_DB:-trackrecord}
+      READONLY_PASSWORD: ${READONLY_PASSWORD:-readonly}
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/grafana/dashboards:/var/lib/grafana/dashboards:ro
+
+  # Optional: run the ingestor in a container too (`docker compose --profile app up`).
+  # During development it is usually easier to run it from the IDE / `mvn spring-boot:run`.
+  ingestor:
+    profiles: ["app"]
+    build: ./ingestor
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-trackrecord}
+      POSTGRES_USER: ${POSTGRES_USER:-trackrecord}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trackrecord}
+      DB_CLIENT_ID: ${DB_CLIENT_ID:-}
+      DB_API_KEY: ${DB_API_KEY:-}
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:
